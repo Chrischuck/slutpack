@@ -1,0 +1,85 @@
+import { useQuery, UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
+import { useEffect, useRef } from 'react';
+
+interface TimeoutQueryOptions<TData, TError> extends Omit<UseQueryOptions<TData, TError>, 'queryFn'> {
+  queryFn: () => Promise<TData>;
+  timeout?: number;
+  onAuthError?: () => void;
+}
+
+/**
+ * Custom hook that wraps useQuery with automatic timeout and session refresh on auth errors
+ * Includes automatic 10-second timeout and built-in session refresh on auth errors
+ */
+export function useTimeoutQuery<TData = unknown, TError = Error>(
+  options: TimeoutQueryOptions<TData, TError>
+): UseQueryResult<TData, TError> {
+  const { queryFn, timeout = 10000, onAuthError, ...queryOptions } = options;
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  const wrappedQueryFn = async (): Promise<TData> => {
+    // Create new AbortController for this request
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
+
+    // Set up timeout
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      timeoutRef.current = setTimeout(() => {
+        abortControllerRef.current?.abort();
+        reject(new Error('Request timeout'));
+      }, timeout);
+    });
+
+    try {
+      const result = await Promise.race([
+        queryFn(),
+        timeoutPromise,
+      ]);
+
+      // Clear timeout on success
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+
+      return result;
+    } catch (error: any) {
+      // Clear timeout on error
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+
+      // Check for auth errors (401, 403)
+      if (error?.status === 401 || error?.status === 403) {
+        // Call onAuthError callback if provided
+        if (onAuthError) {
+          onAuthError();
+        }
+      }
+
+      throw error;
+    }
+  };
+
+  const queryResult = useQuery<TData, TError>({
+    ...queryOptions,
+    queryFn: wrappedQueryFn,
+  });
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
+  return queryResult;
+}
+

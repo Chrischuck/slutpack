@@ -1,0 +1,32 @@
+{
+  "name": "slutpack",
+  "version": "1.0.0",
+  "description": "Scaffold production-ready Expo apps with Expo Router, React Query, and deployment config",
+  "main": "bin/slutpack.js",
+  "bin": {
+    "slutpack": "./bin/slutpack.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "expo",
+    "react-native",
+    "scaffold",
+    "generator",
+    "expo-router",
+    "react-query"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^11.1.0",
+    "fs-extra": "^11.2.0",
+    "inquirer": "^9.2.15"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
+

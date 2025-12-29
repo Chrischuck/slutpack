@@ -1,0 +1,176 @@
+# Deployment Guide
+
+This guide will help you deploy your {{APP_NAME}} app to TestFlight and Google Play Store.
+
+## Prerequisites
+
+- EAS CLI installed: `npm install -g eas-cli`
+- Expo account (sign up at https://expo.dev)
+- Apple Developer account (for iOS)
+- Google Play Console account (for Android)
+
+## Finding Required Information
+
+### EAS Project ID
+
+1. Go to https://expo.dev and sign in
+2. Create a new project or select your existing project
+3. The Project ID is a UUID displayed in your project settings
+4. It looks like: `2debb1f5-3188-4c3f-9d77-0e3ca5d8ee73`
+5. Add it to `app.json` under `extra.eas.projectId`
+
+**Note**: If you didn't provide an EAS Project ID during setup, you can:
+- Run `eas init` in your project directory
+- This will create a project and add the ID to `app.json`
+
+### Apple Team ID
+
+1. Go to https://developer.apple.com/account
+2. Sign in with your Apple Developer account
+3. Click on "Membership" in the sidebar
+4. Your Team ID is displayed at the top (10 characters, e.g., `YH6LC8XKMZ`)
+5. It's already configured in `eas.json` under `submit.production.ios.appleTeamId`
+
+### Apple ID
+
+- This is the email address associated with your Apple Developer account
+- It's already configured in `eas.json` under `submit.production.ios.appleId`
+- Make sure this matches the email you use for App Store Connect
+
+### Android Play Store Service Account
+
+1. Go to https://play.google.com/console
+2. Select your app (or create one)
+3. Go to **Setup** → **API access**
+4. Click **Create new service account**
+5. Follow the link to Google Cloud Console
+6. Create a service account with **Service Account User** role
+7. Download the JSON key file
+8. Save it as `google-play-service-account.json` in your project root
+9. Add it to `.gitignore` (already included)
+10. The path is configured in `eas.json` under `submit.production.android.serviceAccountKeyPath`
+
+## iOS Deployment (TestFlight)
+
+### 1. Build for iOS
+
+```bash
+# Build locally (requires Xcode)
+eas build --platform ios --profile production --local
+
+# Or build on EAS servers (recommended)
+eas build --platform ios --profile production
+```
+
+### 2. Submit to TestFlight
+
+```bash
+# Submit the build
+eas submit --platform ios --profile production
+```
+
+Or use the EAS dashboard to submit manually.
+
+### 3. Verify in App Store Connect
+
+1. Go to https://appstoreconnect.apple.com
+2. Navigate to your app → TestFlight
+3. Wait for processing (usually 10-30 minutes)
+4. Add testers and distribute
+
+## Android Deployment (Google Play)
+
+### 1. Build for Android
+
+```bash
+# Build locally (requires Android SDK)
+eas build --platform android --profile production --local
+
+# Or build on EAS servers (recommended)
+eas build --platform android --profile production
+```
+
+### 2. Submit to Google Play
+
+```bash
+# Submit the build
+eas submit --platform android --profile production
+```
+
+**Note**: Make sure `google-play-service-account.json` is in your project root before submitting.
+
+### 3. Verify in Google Play Console
+
+1. Go to https://play.google.com/console
+2. Navigate to your app → Release → Testing
+3. Create a new release with the uploaded AAB
+4. Review and publish
+
+## Troubleshooting
+
+### EAS Project ID Missing
+
+If you see errors about missing project ID:
+1. Run `eas init` in your project
+2. Select your Expo account
+3. Create or link a project
+4. The ID will be added to `app.json`
+
+### Apple Team ID Issues
+
+- Verify your Team ID at https://developer.apple.com/account
+- Make sure you have an active Apple Developer Program membership
+- The Team ID should be 10 characters
+
+### Android Service Account Issues
+
+- Verify the JSON key file is in the project root
+- Check that the service account has the correct permissions
+- Ensure the file is named exactly `google-play-service-account.json`
+- Don't commit this file to git (it's in `.gitignore`)
+
+### Build Failures
+
+- Check EAS build logs: `eas build:list`
+- Verify all dependencies are compatible
+- Ensure `app.json` and `eas.json` are valid JSON
+- Check that bundle identifier/package name are unique
+
+## Quick Reference
+
+### Build Commands
+
+```bash
+# iOS
+eas build --platform ios --profile production
+
+# Android
+eas build --platform android --profile production
+
+# Both
+eas build --platform all --profile production
+```
+
+### Submit Commands
+
+```bash
+# iOS
+eas submit --platform ios --profile production
+
+# Android
+eas submit --platform android --profile production
+```
+
+### Check Build Status
+
+```bash
+eas build:list
+```
+
+## Additional Resources
+
+- [EAS Build Documentation](https://docs.expo.dev/build/introduction/)
+- [EAS Submit Documentation](https://docs.expo.dev/submit/introduction/)
+- [Apple Developer Documentation](https://developer.apple.com/documentation/)
+- [Google Play Console Help](https://support.google.com/googleplay/android-developer)
+
