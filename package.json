@@ -7,6 +7,9 @@
     "slutpack": "./bin/slutpack.js"
   },
   "scripts": {
+    "start": "node bin/slutpack.js",
+    "link": "npm link",
+    "unlink": "npm unlink -g slutpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -15,10 +18,27 @@
     "scaffold",
     "generator",
     "expo-router",
-    "react-query"
+    "react-query",
+    "cli",
+    "boilerplate",
+    "starter"
   ],
   "author": "",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YOUR_USERNAME/slutpack.git"
+  },
+  "homepage": "https://github.com/YOUR_USERNAME/slutpack#readme",
+  "bugs": {
+    "url": "https://github.com/YOUR_USERNAME/slutpack/issues"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "templates",
+    "README.md"
+  ],
   "dependencies": {
     "chalk": "^4.1.2",
     "commander": "^11.1.0",

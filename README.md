@@ -107,6 +107,59 @@ After generation:
    - Run `eas build --platform ios --profile production`
    - Run `eas submit --platform ios --profile production`
 
+## Development
+
+### Running Locally
+
+You have several options to test locally:
+
+**Option 1: Direct execution**
+```bash
+node bin/slutpack.js my-test-app
+```
+
+**Option 2: Use npm link (creates global symlink)**
+```bash
+# In the slutpack directory
+npm link
+
+# Now you can run from anywhere
+slutpack my-test-app
+
+# To unlink when done
+npm unlink -g slutpack
+```
+
+**Option 3: Use npx with local path**
+```bash
+npx . my-test-app
+```
+
+### Publishing to npm
+
+1. Make sure you have an npm account and are logged in:
+   ```bash
+   npm login
+   ```
+
+2. Update the `author` and `repository` fields in `package.json` with your info.
+
+3. Publish:
+   ```bash
+   npm publish
+   ```
+
+4. For updates, bump the version first:
+   ```bash
+   npm version patch  # or minor/major
+   npm publish
+   ```
+
+After publishing, anyone can use:
+```bash
+npx slutpack my-app
+```
+
 ## License
 
 MIT
